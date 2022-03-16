@@ -22,9 +22,14 @@
   let wheelOffset = 0;
 
   let playingLetterIndex = 1;
+  let numberOfCuts = 0;
 
   let incorrectGuesses = 0;
   let currentGuess = '';
+
+  $: pointsToEarn = Math.pow(2,4-numberOfCuts)*(4-playingLetterIndex);
+
+  let earnedPoints = 0;
 
 
   const pivotWheel = (direction) => {
@@ -45,6 +50,9 @@
       shuffledAlphabet = shuffle(shuffledAlphabet.filter(d=>!lowerHalf.includes(d)));
     }
 
+    if (shuffledAlphabet.length == 13) { shuffledAlphabet.push('🙈','🙈','🙊'); shuffledAlphabet = shuffle(shuffledAlphabet)}
+    numberOfCuts ++;
+
   }
 
   const executeGuess = () => {
@@ -54,6 +62,8 @@
       shuffledAlphabet = shuffle(fullAlphabet);
       wheelOffset = 0;
       currentGuess = "";
+      numberOfCuts = 0;
+      earnedPoints = earnedPoints + pointsToEarn;
     } else {
       window.alert("That wasn't it");
       currentGuess = "";
@@ -83,7 +93,7 @@
 
   <button on:click={()=>{pivotWheel('f')}}>Turn Right</button>
   <button on:click={()=>{pivotWheel('l')}}>Turn Left </button>
-  <button on:click={executeCut}>Cut</button>
+  <button on:click={executeCut} disabled='{numberOfCuts>3}'>Cut</button>
 
   <div id="guess-section-outer">
     <div id="guess-section-inner">
@@ -92,12 +102,20 @@
     </div>
   </div>
 
+  <div>
+    A correct guess earns {pointsToEarn} points
+  </div>
+
   <div id="magic-word-boxes-outer">
     <div id="magic-word-boxes-inner">
       {#each magicWord.split("") as magicWordLetter, i}
         <div class="magic-word-box" class:revealed="{i < playingLetterIndex}">{magicWordLetter}</div>
       {/each}
     </div>
+  </div>
+
+  <div>
+    You've earned a total of {earnedPoints} points
   </div>
 
   <div id="incorrect-guesses-outer">

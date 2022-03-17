@@ -2,7 +2,8 @@
   import { tweened } from "svelte/motion";
   import { cubicOut } from "svelte/easing";
 
-  const magicWord = "able";
+  const possibleWords = ['adze','pore','elks','bump','chat','node','dink','lump'];
+  const magicWord = possibleWords[Math.floor(Math.random() * possibleWords.length)];
   const fullAlphabet = "abcdefghijklmnopqrstuvwxyz".split("");
 
   const radiansInCircle = (360 * Math.PI) / 180;
@@ -91,6 +92,9 @@
       window.alert("That wasn't it");
       currentGuess = "";
       incorrectGuesses++;
+      if(incorrectGuesses > 3) {
+        window.alert("Game over")
+      }
     }
   };
 </script>
@@ -106,12 +110,12 @@
               x={150 *
                 Math.cos(
                   (radiansInCircle / shuffledAlphabet.length) *
-                    (i + -$wheelOffset)
+                    (i + -$wheelOffset) + (radiansInCircle/shuffledAlphabet.length/2)
                 )}
               y={150 *
                 Math.sin(
                   (radiansInCircle / shuffledAlphabet.length) *
-                    (i + -$wheelOffset)
+                    (i + -$wheelOffset) + (radiansInCircle/shuffledAlphabet.length/2)
                 )}
               transform="translate(0,5)">{letter.toUpperCase()}</text
             >
@@ -121,8 +125,8 @@
             y1="0"
             x2="200"
             y2="0"
-            stroke="black"
-            transform="rotate(-7)"
+            stroke="#130D4C"
+            stroke-width="4"
           />
         </g>
       </svg>
@@ -175,8 +179,12 @@
   </div>
 
   <div id="incorrect-guesses-outer">
-    {#each Array(incorrectGuesses) as _}
-      ☠️
+    {#each [0,1,2,3] as i}
+      {#if i < incorrectGuesses}
+        💀
+      {:else}
+        🙂
+      {/if}
     {/each}
   </div>
 </main>
@@ -187,10 +195,21 @@
       Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   }
 
+  :global(html) {
+    min-height: 100%;
+  }
+
+  :global(body) {
+    min-height: 100%;
+    background: rgb(34,193,195);
+    background: linear-gradient(38deg, rgba(34,193,195,0.17) 0%, rgba(253,187,45,0.17) 100%);
+  }
+
+  main { width: 400px; margin: auto; text-align: center; }
+
   #wheel-svg {
     width: 350px;
-    height: 400px;
-    background-color: pink;
+    height: 350px;
   }
 
   .magic-word-box {
@@ -212,6 +231,12 @@
 
   #guess-section-outer {
     margin: 1em 0;
-    background-color: blue;
+    border: 2px solid #130D4C;
+    border-radius: 8px;
+    padding: 1rem;
+  }
+
+  #guess-section-outer input {
+    width: 3rem;
   }
 </style>
